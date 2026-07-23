@@ -2,10 +2,9 @@ FROM golang:1.23-alpine AS builder
 
 WORKDIR /src
 
-COPY go.mod go.sum ./
+COPY * ./
 RUN go mod download
 
-COPY *.go ./
 RUN CGO_ENABLED=0 go build -ldflags '-w -s -extldflags "-static"' -o ipmi-power main.go
 
 FROM scratch
