@@ -63,10 +63,17 @@ spec:
       labels:
         app: ipmi-power
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
       containers:
         - name: ipmi-power
-          image: ipmi-power:latest
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/caijian76/ipmi-power:main
+          imagePullPolicy: Always
           args:
             - -config
             - /config/config.json
