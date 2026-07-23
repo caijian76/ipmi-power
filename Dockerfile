@@ -6,7 +6,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY *.go ./
-RUN CGO_ENABLED=0 go build -ldflags '-linkmode external -extldflags "-static"' -o ipmi-power main.go
+RUN CGO_ENABLED=0 go build -ldflags '-w -s -extldflags "-static"' -o ipmi-power main.go
 
 FROM scratch
 
