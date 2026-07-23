@@ -1,0 +1,42 @@
+{
+    "servers": [
+        {
+            "name": "k8s3",
+            "host": "172.16.100.102",
+            "username": "ADMIN",
+            "password": "Edu@9527",
+            "interface": "lanplus",
+            "scheduled_operations": [
+                {
+                    "time": "08:00",
+                    "action": "on",
+                    "days_of_week": [1, 2, 3, 4, 5]
+                },
+                {
+                    "time": "20:00",
+                    "action": "soft",
+                    "days_of_week": [1, 2, 3, 4, 5]
+                }
+            ]
+        },
+        {
+            "name": "arm-pve",
+            "host": "172.16.100.7",
+            "username": "Administrator",
+            "password": "Edu@9527",
+            "interface": "lanplus",
+            "scheduled_operations": [
+                {
+                    "time": "08:01",
+                    "action": "on",
+                    "days_of_week": [1, 2, 3, 4, 5]
+                },
+                {
+                    "time": "20:00",
+                    "action": "soft",
+                    "days_of_week": [1, 2, 3, 4, 5]
+                }
+            ]
+        }
+    ]
+}
