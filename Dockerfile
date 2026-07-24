@@ -5,7 +5,7 @@ WORKDIR /src
 COPY * ./
 RUN go mod download
 
-RUN CGO_ENABLED=0 go build -ldflags '-w -s -extldflags "-static"' -o ipmi-power main.go
+RUN CGO_ENABLED=0 go build -ldflags '-w -s -extldflags "-static"' -o ipmi-power
 
 FROM alpine:3.18 AS runner
 
