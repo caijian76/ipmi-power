@@ -255,7 +255,8 @@ func shouldExecuteOperation(operation ScheduledOperation, currentTime time.Time,
 
 	if currentHour == scheduledHour && currentMinute == scheduledMinute {
 		lastExec, exists := lastExecutionTime[key]
-		if !exists || lastExec.Hour() != currentHour || lastExec.Minute() != currentMinute {
+		currentDate := currentTime.Format("2006-01-02")
+		if !exists || lastExec.Hour() != currentHour || lastExec.Minute() != currentMinute || lastExec.Format("2006-01-02") != currentDate {
 			if isDayMatch(currentTime.Weekday(), operation.DaysOfWeek) {
 				return true
 			}
