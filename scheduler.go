@@ -24,11 +24,11 @@ func shouldExecuteOperation(operation ScheduledOperation, currentTime time.Time,
 	}
 
 	lastExec, exists := lastExecutionTime[key]
-	if !exists || !lastExec.Equal(currentMinute) {
+	if !exists {
 		return true
 	}
 
-	return false
+	return !lastExec.Equal(currentMinute)
 }
 
 func isDayMatch(currentWeekday time.Weekday, allowedDays []int) bool {
@@ -46,16 +46,11 @@ func isDayMatch(currentWeekday time.Weekday, allowedDays []int) bool {
 	return false
 }
 
-func runDaemon(configPath string, checkInterval int) {
-	if checkInterval <= 0 {
-		logError("检查间隔必须大于 0 秒")
-		return
-	}
-
+func runDaemon(configPath string) {
 	logInfo("========================================")
 	logInfo("IPMI 电源管理守护进程启动")
 	logInfo("配置文件: %s", configPath)
-	logInfo("检查间隔: %d 秒", checkInterval)
+	logInfo("检查间隔: 1 秒")
 	logInfo("========================================\n")
 
 	config, err := loadConfig(configPath)
@@ -74,7 +69,8 @@ func runDaemon(configPath string, checkInterval int) {
 	}
 	logInfo("")
 
-	ticker := time.NewTicker(time.Duration(checkInterval) * time.Second)
+	// 持续检查，但调度判断只依赖计划时间点，不依赖 checkInterval 的大小。
+	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
 
 	lastExecutionTime := make(map[string]time.Time)
@@ -104,7 +100,7 @@ func runDaemon(configPath string, checkInterval int) {
 			}
 
 			for _, operation := range server.ScheduledOperations {
-				key := fmt.Sprintf("%s_%s_%s_%s", server.Name, now.Format("2006-01-02"), operation.Time, operation.Action)
+				key := fmt.Sprintf("%s_%s_%s_%s_%s", server.Name, now.Format("2006-01-02"), operation.Time, operation.Action, formatDaysOfWeek(operation.DaysOfWeek))
 				if shouldExecuteOperation(operation, now, lastExecutionTime, key) {
 					logInfo("\n[%s] 时间: %s (%s) - 触发定时任务: %s @ %s",
 						server.Name, currentTimeStr, weekdayNames[now.Weekday()], operation.Action, operation.Time)

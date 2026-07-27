@@ -10,7 +10,6 @@ import (
 
 func main() {
 	configPath := flag.String("config", "config.json", "配置文件路径")
-	interval := flag.Int("interval", 30, "检查定时任务的间隔（秒）")
 	showStatus := flag.Bool("status", false, "显示所有服务器当前状态并退出")
 
 	flag.Usage = func() {
@@ -24,7 +23,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "\n示例:\n")
 		fmt.Fprintf(os.Stderr, "  %s                          # 使用默认配置启动守护进程\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -config myconfig.json     # 使用指定配置文件\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -interval 60             # 每60秒检查一次\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -status                  # 显示状态并退出\n", os.Args[0])
 	}
 
@@ -76,5 +74,5 @@ func main() {
 		return
 	}
 
-	runDaemon(*configPath, *interval)
+	runDaemon(*configPath)
 }
