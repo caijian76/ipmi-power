@@ -81,6 +81,7 @@ func runDaemon(configPath string, checkInterval int) {
 
 	for range ticker.C {
 		now := time.Now()
+		currentMinute := now.Truncate(time.Minute)
 		currentTimeStr := now.Format("2006-01-02 15:04:05")
 
 		for _, server := range config.Servers {
@@ -113,7 +114,7 @@ func runDaemon(configPath string, checkInterval int) {
 						logError("[%s] 执行操作失败: %v", server.Name, err)
 					}
 
-					lastExecutionTime[key] = now
+					lastExecutionTime[key] = currentMinute
 				}
 			}
 
