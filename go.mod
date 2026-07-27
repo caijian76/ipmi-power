@@ -2,7 +2,10 @@ module ipmi-power
 
 go 1.23.0
 
-require github.com/bougou/go-ipmi v0.8.3
+require (
+	github.com/bougou/go-ipmi v0.8.3
+	github.com/robfig/cron/v3 v3.0.1
+)
 
 require (
 	github.com/fatih/color v1.15.0 // indirect
@@ -16,7 +19,6 @@ require (
 	github.com/olekukonko/ll v0.0.9 // indirect
 	github.com/olekukonko/tablewriter v1.0.9 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
