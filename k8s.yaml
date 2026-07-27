@@ -77,8 +77,6 @@ spec:
           args:
             - -config
             - /config/config.json
-            - -interval
-            - "30"
           volumeMounts:
             - name: config
               mountPath: /config

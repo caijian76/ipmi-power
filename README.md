@@ -1,14 +1,15 @@
 # IPMI Power Manager
 
-基于 IPMI 协议的电源管理守护进程，支持定时开关机操作。
+基于 IPMI 协议的电源管理守护进程，支持按计划执行开关机操作。
 
 ## 功能特性
 
-- 支持 IPMI 协议远程管理服务器电源
-- 支持定时任务：开机、关机（硬关机/软关机）、重启、复位
+- 支持通过 IPMI 协议远程管理服务器电源
+- 支持按时间点执行定时任务：开机、硬关机、软关机、重启、复位
 - 支持多服务器配置
 - 支持按星期设置定时任务执行日期
-- 电源状态查询
+- 支持查询服务器当前电源状态
+- 使用 cron/v3 调度器，按精确分钟触发任务
 - 日志记录
 
 ## 支持的操作
@@ -28,27 +29,27 @@
 
 ```json
 {
-    "servers": [
+  "servers": [
+    {
+      "name": "服务器名称",
+      "host": "172.16.100.102",
+      "username": "ADMIN",
+      "password": "密码",
+      "interface": "lanplus",
+      "scheduled_operations": [
         {
-            "name": "服务器名称",
-            "host": "172.16.100.102",
-            "username": "ADMIN",
-            "password": "密码",
-            "interface": "lanplus",
-            "scheduled_operations": [
-                {
-                    "time": "08:00",
-                    "action": "on",
-                    "days_of_week": [1, 2, 3, 4, 5]
-                },
-                {
-                    "time": "20:00",
-                    "action": "soft",
-                    "days_of_week": [1, 2, 3, 4, 5]
-                }
-            ]
+          "time": "08:00",
+          "action": "on",
+          "days_of_week": [1, 2, 3, 4, 5]
+        },
+        {
+          "time": "20:00",
+          "action": "soft",
+          "days_of_week": [1, 2, 3, 4, 5]
         }
-    ]
+      ]
+    }
+  ]
 }
 ```
 
@@ -58,7 +59,7 @@
 - `host`: BMC IP 地址
 - `username`: IPMI 用户名
 - `password`: IPMI 密码
-- `interface`: 接口类型 (`lan` 或 `lanplus`，默认为 `lanplus`)
+- `interface`: 接口类型（`lan` 或 `lanplus`，默认为 `lanplus`）
 - `scheduled_operations`: 定时任务列表
   - `time`: 执行时间，格式为 `HH:MM`
   - `action`: 操作类型
@@ -81,9 +82,6 @@
 # 使用指定配置文件
 ./ipmi-power -config myconfig.json
 
-# 自定义检查间隔（秒）
-./ipmi-power -interval 60
-
 # 显示所有服务器状态并退出
 ./ipmi-power -status
 ```
@@ -93,13 +91,12 @@
 | 选项 | 说明 | 默认值 |
 |------|------|--------|
 | `-config` | 配置文件路径 | `config.json` |
-| `-interval` | 检查定时任务的间隔（秒） | `30` |
 | `-status` | 显示所有服务器当前状态并退出 | `false` |
 
 ## 构建
 
 ```bash
-go build -o ipmi-power main.go
+go build -o ipmi-power .
 ```
 
 ### 静态编译
@@ -108,16 +105,17 @@ go build -o ipmi-power main.go
 
 ```bash
 docker run --rm -v $(pwd):/src -w /src golang:1.23-alpine \
-  go build -ldflags '-linkmode external -extldflags "-static"' -o ipmi-power main.go
+  go build -ldflags '-linkmode external -extldflags "-static"' -o ipmi-power .
 ```
 
 或者使用 CGO 禁用模式：
 
 ```bash
-CGO_ENABLED=0 go build -ldflags '-linkmode external -extldflags "-static"' -o ipmi-power main.go
+CGO_ENABLED=0 go build -ldflags '-w -s -extldflags "-static"' -o ipmi-power .
 ```
 
 ## 依赖
 
 - Go 1.23+
 - github.com/bougou/go-ipmi v0.8.3
+- github.com/robfig/cron/v3 v3.0.1
